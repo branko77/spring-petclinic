@@ -23,6 +23,23 @@ pipeline {
 			}
 		}		
 			
+        stage("Remove existing container") { 
+
+            steps {
+                script {
+                    try {
+                        sh "docker stop ${container_name}"
+                        sh "docker rm ${container_name}"
+                    } catch (err) {
+                        echo "Container ${container_name} is not running"
+                    }
+                }
+ 
+            }
+ 
+        }
+			
+			
 			stage("Build docker image") {
 					steps {
 		
