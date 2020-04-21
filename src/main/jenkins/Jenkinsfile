@@ -1,0 +1,42 @@
+pipeline {
+   agent{
+        label "${agent_label}"
+		}
+		
+	    environment {
+        image_name = 'petclinic'
+        container_name = 'pet-container'
+    }
+	
+		stages {
+			stage('Git Clone') {
+                steps {
+                git credentialsId: '699e3f61-82f0-4566-b8d7-749406a03d47', url: 'https://github.com/branko77/spring-petclinic'
+                 }
+			}
+
+			
+			stage("Build package") {
+					steps {						
+                sh "./mvnw package -DskipTests"
+
+			}
+		}		
+			
+			stage("Build docker image") {
+					steps {
+		
+                sh "docker build -t ${image_name} ."
+                 }
+			}
+
+		
+			stage("Run Container") {
+					steps {
+                sh "docker run --name ${container_name} -itd -p 8080:8080 ${image_name}"
+                 }
+			}
+					
+	}
+}	
+
